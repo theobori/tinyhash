@@ -1,0 +1,2 @@
+# tinyhash
+C simple hashmap
