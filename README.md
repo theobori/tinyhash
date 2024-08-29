@@ -1,5 +1,7 @@
 # Simple C hashmap
 
+[![build](https://github.com/theobori/tinyhash/actions/workflows/build.yml/badge.svg)](https://github.com/theobori/tinyhash/actions/workflows/build.yml)
+
 This is an implementation of the C hashmap that manages collisions using the ‘Separate chaining’ concept. The public API is deliberately simple and user-friendly.
 
 ## 📖 Build and run
