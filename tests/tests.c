@@ -5,7 +5,7 @@
 
 static MunitTest test_th_suite_tests[] = {
     {
-        "/hash_str",
+        "/th_hash_str",
         test_th_hash,
         NULL,
         NULL,
@@ -13,7 +13,7 @@ static MunitTest test_th_suite_tests[] = {
         NULL
     },
     {
-        "/hash_str_multiple_iteration",
+        "/th_hash_str_multiple_iteration",
         test_th_hash_multiple_iteration,
         NULL,
         NULL,
@@ -21,7 +21,7 @@ static MunitTest test_th_suite_tests[] = {
         NULL
     },
     {
-        "/hash_str_null",
+        "/th_hash_str_null",
         test_th_hash_null,
         NULL,
         NULL,
@@ -29,7 +29,7 @@ static MunitTest test_th_suite_tests[] = {
         NULL
     },
     {
-        "/hash_str_with_int",
+        "/th_hash_str_with_int",
         test_th_hash_with_int,
         NULL,
         NULL,
@@ -37,7 +37,7 @@ static MunitTest test_th_suite_tests[] = {
         NULL
     },
     {
-        "/table_set_and_get",
+        "/th_table_set_and_get",
         test_th_table_put_and_get,
         NULL,
         NULL,
@@ -45,7 +45,7 @@ static MunitTest test_th_suite_tests[] = {
         NULL
     },
     {
-        "/table_get_with_empty_table",
+        "/th_table_get_with_empty_table",
         test_th_table_get_with_empty_table,
         NULL,
         NULL,
@@ -53,7 +53,7 @@ static MunitTest test_th_suite_tests[] = {
         NULL
     },
     {
-        "/table_set_with_full_table",
+        "/th_table_set_with_full_table",
         test_th_table_put_with_full_table,
         NULL,
         NULL,
@@ -61,7 +61,7 @@ static MunitTest test_th_suite_tests[] = {
         NULL
     },
     {
-        "/table_set_overwrite",
+        "/th_table_set_overwrite",
         test_th_table_put_overwrite,
         NULL,
         NULL,
@@ -69,7 +69,7 @@ static MunitTest test_th_suite_tests[] = {
         NULL
     },
     {
-        "/table_set_collision",
+        "/th_table_set_collision",
         test_th_table_put_collision,
         NULL,
         NULL,
@@ -77,8 +77,16 @@ static MunitTest test_th_suite_tests[] = {
         NULL
     },
     {
-        "/table_put_struct_as_key",
+        "/th_table_put_struct_as_key",
         test_th_table_put_struct_as_key,
+        NULL,
+        NULL,
+        MUNIT_TEST_OPTION_NONE,
+        NULL
+    },
+    {
+        "/th_table_delete",
+        test_th_table_delete,
         NULL,
         NULL,
         MUNIT_TEST_OPTION_NONE,

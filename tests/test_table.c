@@ -24,7 +24,7 @@ MunitResult test_th_table_put_and_get(const MunitParameter params[], void* data)
 
     munit_assert_uint64((uint64_t) value, ==, 333);
 
-    th_table_destroy(&table);
+    th_table_free(&table);
 
     return MUNIT_OK;
 }
@@ -38,7 +38,7 @@ MunitResult test_th_table_get_with_empty_table(const MunitParameter params[], vo
 
     value = th_table_get(&table, "hello", strlen("hello"));
 
-    th_table_destroy(&table);
+    th_table_free(&table);
 
     return MUNIT_OK;
 }
@@ -57,9 +57,9 @@ MunitResult test_th_table_put_with_full_table(const MunitParameter params[], voi
         th_table_put(&table, j, sizeof(i), j);
     }
 
-
     for (int i = 0; i < SET_GET_ITERATIONS; i++) {
         value = (int *) th_table_get(&table, &i, sizeof(i));
+        th_table_delete(&table, &i, sizeof(i));
 
         munit_assert_int(*value, ==, i);
 
@@ -73,7 +73,8 @@ MunitResult test_th_table_put_with_full_table(const MunitParameter params[], voi
     th_table_put(&table, "f", strlen("f"), (void *) 1);
     th_table_put(&table, "g", strlen("g"), (void *) 1);
     th_table_put(&table, "h", strlen("h"), (void *) 1);
-
+    th_table_put(&table, "hva", strlen("hva"), (void *) 1);
+    th_table_put(&table, "hb", strlen("hb"), (void *) 1);
 
     th_table_put(&table, "azdaz", strlen("azdaz"), (void *) 10);
 
@@ -81,7 +82,7 @@ MunitResult test_th_table_put_with_full_table(const MunitParameter params[], voi
 
     munit_assert_int((uint64_t) value, ==, 10);
 
-    th_table_destroy(&table);
+    th_table_free(&table);
 
     return MUNIT_OK;
 }
@@ -101,7 +102,7 @@ MunitResult test_th_table_put_overwrite(const MunitParameter params[], void* dat
 
     munit_assert_uint64((uint64_t) value, ==, 2);
 
-    th_table_destroy(&table);
+    th_table_free(&table);
 
     return MUNIT_OK;
 }
@@ -122,7 +123,7 @@ MunitResult test_th_table_put_collision(const MunitParameter params[], void* dat
     value = th_table_get(&table, "ello", strlen("ello"));
     munit_assert_uint64((uint64_t) value, ==, 456);
 
-    th_table_destroy(&table);
+    th_table_free(&table);
 
     return MUNIT_OK;
 }
@@ -146,7 +147,71 @@ MunitResult test_th_table_put_struct_as_key(const MunitParameter params[], void*
 
     munit_assert_uint8(test_struct.b[3], ==, 222);
 
-    th_table_destroy(&table);
+    th_table_free(&table);
+
+    return MUNIT_OK;
+}
+
+MunitResult test_th_table_delete(const MunitParameter params[], void* data)
+{
+    th_table_t table;
+    th_any_t value;
+    bool ok;
+
+    th_table_init(&table);
+
+    char *keys[] = {
+        "a",
+        "b",
+        "bb",
+        "bb",
+        "bbb",
+        "c",
+        "ello"
+    };
+
+    size_t keys_length = sizeof(keys) / sizeof(keys[0]);
+
+    // Insert key value pair
+    for (int i = 0; i < keys_length; i++) {
+        th_table_put(&table, keys[i], strlen(keys[i]), (void *) (uint64_t) i + 1);
+    }
+
+    // Check everything exists
+    for (int i = 0; i < keys_length; i++) {
+        value = th_table_get(&table, keys[i], strlen(keys[i]));
+        munit_assert_not_null(value);
+    }
+
+    ok = th_table_delete(&table, "a", strlen("a"));
+    munit_assert_true(ok);
+    
+    ok = th_table_delete(&table, "a", strlen("a"));
+    munit_assert_false(ok);
+
+    ok = th_table_delete(&table, "ello", strlen("ello"));
+    munit_assert_true(ok);
+    ok = th_table_delete(&table, "bb", strlen("bb"));
+    munit_assert_true(ok);
+    ok = th_table_delete(&table, "b", strlen("b"));
+    munit_assert_true(ok);
+    ok = th_table_delete(&table, "bbb", strlen("bbb"));
+    munit_assert_true(ok);
+
+    value = th_table_get(&table, "a", strlen("a"));
+    munit_assert_null(value);
+
+    // Delete everything
+    for (int i = 0; i < keys_length; i++) {
+        th_table_delete(&table, keys[i], strlen(keys[i]));
+
+        value = th_table_get(&table, keys[i], strlen(keys[i]));
+        munit_assert_null(value);
+    }
+
+    munit_assert_uint32(table.count, ==, 0);
+
+    th_table_free(&table);
 
     return MUNIT_OK;
 }

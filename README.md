@@ -68,31 +68,49 @@ uint32_t custom_hash_function(uint8_t *bytes, size_t size)
 int main(int argc, const char* argv[])
 {
     th_table_t table;
+    bool success;
+
     Person person = { "James", true };
 
     // Initialize the table
     th_table_init(&table);
 
     // Insert a new key value pair
-    th_table_put(&table, "key_1", strlen("key_1"), &person);
+    success = th_table_put(&table, "key_1", strlen("key_1"), &person);
+    if (success == false) {
+        fprintf(stderr, "Unable to insert\n");
+        return 1;
+    }
 
     // Get the last inserted value
     Person *james;
     james = th_table_get(&table, "key_1", strlen("key_1"));
-    if (james == NULL) {
-        fprintf(stderr, "Unable to get value from key_1");
+
+    success = james != NULL;
+    if (success == false) {
+        fprintf(stderr, "It does not exist\n");
         return 1;
     }
 
     printf("name -> %s, is_hydrated -> %d\n", james->name, james->is_hydrated);
 
-    // Feel free to change the hash function
-    table.options.hash_func = custom_hash_function;
+    // Delete the entry
+    success = th_table_delete(&table, "key_1", strlen("key_1"));
+    if (success == false) {
+        fprintf(stderr, "Unable to delete\n");
+        return 1;
+    }
+
+    // Verify that it doesnt exist anymore
+    james = th_table_get(&table, "key_1", strlen("key_1"));
+    if (james != NULL) {
+        fprintf(stderr, "The entry still exists\n");
+        return 1;
+    }
 
     // Free the allocated memory
-    th_table_destroy(&table);
+    th_table_free(&table);
 
     return 0;
 }
-
 ```

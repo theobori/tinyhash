@@ -13,6 +13,7 @@ set (
     hash.c
     entry.c
     table.c
+    key.c
 )
 
 set (
@@ -20,7 +21,8 @@ set (
     entry.h
     table.h
     hash.h
-    options.h
+    types.h
+    key.h
 )
 
 add_library (${TINYHASH_NAME} ${TINYHASH_LIB_TYPE} ${TINYHASH_SRC})

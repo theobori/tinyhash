@@ -9,5 +9,6 @@ MunitResult test_th_table_put_with_full_table(const MunitParameter params[], voi
 MunitResult test_th_table_put_overwrite(const MunitParameter params[], void* data);
 MunitResult test_th_table_put_collision(const MunitParameter params[], void* data);
 MunitResult test_th_table_put_struct_as_key(const MunitParameter params[], void* data);
+MunitResult test_th_table_delete(const MunitParameter params[], void* data);
 
 #endif
