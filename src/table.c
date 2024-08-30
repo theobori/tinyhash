@@ -65,12 +65,12 @@ static bool th_is_key_equal(th_key_t *first, th_key_t *second)
     return memcmp(first->data, second->data, first->size) == 0;
 }
 
-static th_entry_t *th_table_find_with_hash(th_table_t *table, th_key_t *key,
-    uint32_t hash)
+static th_entry_t *th_table_find(th_table_t *table, th_key_t *key)
 {
-    if (table->entries == NULL) return NULL;
-
-    int index = hash % table->capacity;
+    // Avoid division by 0
+    if (table->capacity == 0) return NULL;
+    
+    int index = key->hash % table->capacity;
     th_entry_t *entry = table->entries[index];
 
     while (entry != NULL) {
@@ -82,14 +82,6 @@ static th_entry_t *th_table_find_with_hash(th_table_t *table, th_key_t *key,
     }
 
     return NULL;
-}
-
-static th_entry_t *th_table_find(th_table_t *table, th_key_t *key)
-{
-    // Avoid division by 0
-    if (table->capacity == 0) return NULL;
-
-    return th_table_find_with_hash(table, key, key->hash);
 }
 
 th_any_t th_table_get(th_table_t *table, th_any_t data, size_t key_data_size)
@@ -109,7 +101,7 @@ void static th_table_put_with_key(th_table_t *table, th_key_t *key,
         th_table_increase(table);
     }
 
-    th_entry_t *entry = th_table_find_with_hash(table, key, key->hash);
+    th_entry_t *entry = th_table_find(table, key);
 
     if (entry == NULL) {
         int index = key->hash % table->capacity;
