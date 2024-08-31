@@ -1,8 +1,11 @@
-# Simple C hashmap
+# C hashmap implementations
 
 [![build](https://github.com/theobori/tinyhash/actions/workflows/build.yml/badge.svg)](https://github.com/theobori/tinyhash/actions/workflows/build.yml)
 
-This is an implementation of the C hashmap that manages collisions using the ‘Separate chaining’ concept. The public API is deliberately simple and user-friendly.
+This is a library containing multiple C implementations of hashmap. The public API is deliberately simple and user-friendly.
+
+Here are the different methods implemented:
+- [Separate chaining](./src/separate_chaining/)
 
 ## 📖 Build and run
 
@@ -48,35 +51,29 @@ make test
 
 Here is a basic example of how you could use the hashmap.
 
+### With the root controller (high level)
 ```c
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
-#include <tinyhash/table.h>
+#include <tinyhash/tinyhash.h>
 
 typedef struct {
     char name[10];
     bool is_hydrated;
 } Person;
 
-uint32_t custom_hash_function(uint8_t *bytes, size_t size)
-{
-    return 123456;
-}
-
 int main(int argc, const char* argv[])
 {
-    th_table_t table;
     bool success;
-
     Person person = { "James", true };
 
-    // Initialize the table
-    th_table_init(&table);
+    // Create a controller with the separate chaining method 
+    th_t th = th_create(TH_SEPARATE_CHAINING);
 
     // Insert a new key value pair
-    success = th_table_put(&table, "key_1", strlen("key_1"), &person);
+    success = th_put(&th, "key_1", strlen("key_1"), &person);
     if (success == false) {
         fprintf(stderr, "Unable to insert\n");
         return 1;
@@ -84,9 +81,7 @@ int main(int argc, const char* argv[])
 
     // Get the last inserted value
     Person *james;
-    james = th_table_get(&table, "key_1", strlen("key_1"));
-
-    success = james != NULL;
+    james = th_get(&th, "key_1", strlen("key_1"));
     if (success == false) {
         fprintf(stderr, "It does not exist\n");
         return 1;
@@ -95,21 +90,44 @@ int main(int argc, const char* argv[])
     printf("name -> %s, is_hydrated -> %d\n", james->name, james->is_hydrated);
 
     // Delete the entry
-    success = th_table_delete(&table, "key_1", strlen("key_1"));
+    success = th_delete(&th, "key_1", strlen("key_1"));
     if (success == false) {
         fprintf(stderr, "Unable to delete\n");
         return 1;
     }
 
     // Verify that it doesnt exist anymore
-    james = th_table_get(&table, "key_1", strlen("key_1"));
+    james = th_get(&th, "key_1", strlen("key_1"));
     if (james != NULL) {
         fprintf(stderr, "The entry still exists\n");
         return 1;
     }
 
     // Free the allocated memory
-    th_table_free(&table);
+    th_free(&th);
+
+    return 0;
+}
+```
+
+### Without the root controller (lower level)
+
+This is exactly the same logic as using the root controller, although the prefix of functions and types will change.
+
+For example, to use the ‘separate chaining’ method, the prefix will be `th_sc_table`.
+
+```c
+#include <string.h>
+
+#include <tinyhash/separate_chaining/table.h>
+
+int main(int argc, const char* argv[])
+{
+    th_sc_table_t table;
+
+    th_sc_table_init(&table);
+    th_sc_table_put(&table, "hello", strlen("hello"), (th_any_t) 0);
+    // etc..
 
     return 0;
 }

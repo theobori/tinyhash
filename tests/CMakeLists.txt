@@ -2,8 +2,7 @@ include_directories("../src")
 
 project (tinyhash-tests)
 
-set (
-    TINYHASH_SRC_TESTS
+set (TINYHASH_SRC_TESTS
     munit/munit.c
     tests.c
     test_hash.c

@@ -1,7 +1,7 @@
 
 #include "munit/munit.h"
 
-#include "../src/hash.h"
+#include "../src/common/hash.h"
 #include <stdint.h>
 #include <stdio.h>
 

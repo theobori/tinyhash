@@ -3,4 +3,6 @@
 
 typedef void *th_any_t;
 
+typedef void *th_generic_table_t;
+
 #endif

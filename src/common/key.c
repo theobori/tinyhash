@@ -3,7 +3,7 @@
 #include "key.h"
 #include "hash.h"
 
-th_key_t th_key_new(th_any_t data, size_t size)
+th_key_t th_key_create(th_any_t data, size_t size)
 {
     return (th_key_t) {
         .hash = th_hash(data, size),

@@ -2,6 +2,16 @@
 
 #include "test_hash.h"
 #include "test_table.h"
+#include "../src/tinyhash.h"
+
+static char *th_kinds[] = {
+  (char *) TH_SEPARATE_CHAINING, NULL
+};
+
+static MunitParameterEnum th_params[] = {
+  { "kind", th_kinds },
+  { NULL, NULL },
+};
 
 static MunitTest test_th_suite_tests[] = {
     {
@@ -37,60 +47,60 @@ static MunitTest test_th_suite_tests[] = {
         NULL
     },
     {
-        "/th_table_set_and_get",
-        test_th_table_put_and_get,
+        "/th_set_and_get",
+        test_th_put_and_get,
+        NULL,
+        NULL,
+        MUNIT_TEST_OPTION_NONE,
+        th_params
+    },
+    {
+        "/th_get_with_empty_table",
+        test_th_get_with_empty_table,
         NULL,
         NULL,
         MUNIT_TEST_OPTION_NONE,
         NULL
     },
     {
-        "/th_table_get_with_empty_table",
-        test_th_table_get_with_empty_table,
+        "/th_set_with_full_table",
+        test_th_put_with_full_table,
         NULL,
         NULL,
         MUNIT_TEST_OPTION_NONE,
-        NULL
+        th_params
     },
     {
-        "/th_table_set_with_full_table",
-        test_th_table_put_with_full_table,
+        "/th_set_overwrite",
+        test_th_put_overwrite,
         NULL,
         NULL,
         MUNIT_TEST_OPTION_NONE,
-        NULL
+        th_params
     },
     {
-        "/th_table_set_overwrite",
-        test_th_table_put_overwrite,
+        "/th_set_collision",
+        test_th_put_collision,
         NULL,
         NULL,
         MUNIT_TEST_OPTION_NONE,
-        NULL
+        th_params
     },
     {
-        "/th_table_set_collision",
-        test_th_table_put_collision,
+        "/th_put_struct_as_key",
+        test_th_put_struct_as_key,
         NULL,
         NULL,
         MUNIT_TEST_OPTION_NONE,
-        NULL
+        th_params
     },
     {
-        "/th_table_put_struct_as_key",
-        test_th_table_put_struct_as_key,
+        "/th_delete",
+        test_th_delete,
         NULL,
         NULL,
         MUNIT_TEST_OPTION_NONE,
-        NULL
-    },
-    {
-        "/th_table_delete",
-        test_th_table_delete,
-        NULL,
-        NULL,
-        MUNIT_TEST_OPTION_NONE,
-        NULL
+        th_params
     },
     { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
