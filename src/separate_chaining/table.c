@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "table.h"
+#include "../common/table.h"
 
 static bool th_sc_table_put_with_key(th_sc_table_t *table, th_key_t *key,
     th_any_t value);
@@ -31,31 +32,16 @@ th_generic_table_t th_sc_table_create()
     return (th_generic_table_t) _th_sc_table_create();
 }
 
-static bool th_sc_table_increase(th_sc_table_t *table)
+static bool th_sc_table_copy(th_sc_table_t *dest, th_sc_table_t *src)
 {
-    th_sc_table_t new_table;
+    bool success;
 
-    th_sc_table_init(&new_table);
-
-    // New capacity
-    new_table.capacity = TH_SC_TABLE_NEXT_CAPACITY(table->capacity);
-
-    // New entry array bytes size
-    size_t size = sizeof(th_sc_entry_t *) * new_table.capacity;
-
-    new_table.entries = (th_sc_entry_t **) malloc(size);
-    if (new_table.entries == NULL) return false;
-
-    memset(new_table.entries, 0, size);
-
-    // Re-compute the new index
-    for (int i = 0; i < table->capacity; i++) {
-        bool success;
-        th_sc_entry_t *entry = table->entries[i];
+    for (int i = 0; i < src->capacity; i++) {
+        th_sc_entry_t *entry = src->entries[i];
 
         while (entry != NULL) {
             success = th_sc_table_put_with_key(
-                &new_table,
+                dest,
                 &entry->key,
                 entry->value
             );
@@ -66,7 +52,29 @@ static bool th_sc_table_increase(th_sc_table_t *table)
         }
     }
 
-    // Destroy the old table
+    return true;
+}
+
+
+static bool th_sc_table_increase(th_sc_table_t *table)
+{
+    th_sc_table_t new_table;
+    bool success;
+
+    th_sc_table_init(&new_table);
+
+    new_table.capacity = TH_TABLE_NEXT_CAPACITY(table->capacity);
+
+    size_t size = sizeof(th_sc_entry_t *) * new_table.capacity;
+    new_table.entries = malloc(size);
+
+    if (new_table.entries == NULL) return false;
+
+    memset(new_table.entries, 0, size);
+
+    success = th_sc_table_copy(&new_table, table);
+    if (success == false) return false;
+
     th_sc_table_free((th_generic_table_t) table);
 
     *table = new_table;

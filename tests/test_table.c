@@ -4,6 +4,8 @@
 #include "../src/tinyhash.h"
 #include "munit/munit.h"
 
+#include "../src/open_addressing/table.h"
+
 typedef struct {
     uint32_t a;
     uint8_t b[22];
@@ -11,13 +13,25 @@ typedef struct {
 
 #define SET_GET_ITERATIONS 256 * 256
 
+static th_method_t str_to_method(const char *str)
+{
+    switch (*str) {
+        case 'o': return TH_OPEN_ADRESSING;
+        case 's': return TH_SEPARATE_CHAINING;
+    }
+
+    return TH_SEPARATE_CHAINING;
+}
+
 MunitResult test_th_put_and_get(const MunitParameter params[], void* data)
 {
     th_any_t value;
-    th_kind_t kind = (uint64_t) munit_parameters_get(params, "kind");
-    th_t th = th_create(kind);
+    const char *method_str = munit_parameters_get(params, "method");
+    th_method_t method = str_to_method(method_str);
+    th_t th = th_create(method);
 
     th_put(&th, "hello", strlen("hello"), (th_any_t) 333);
+
     value = th_get(&th, "hello", strlen("hello"));
 
     munit_assert_uint64((uint64_t) value, ==, 333);
@@ -30,10 +44,12 @@ MunitResult test_th_put_and_get(const MunitParameter params[], void* data)
 MunitResult test_th_get_with_empty_table(const MunitParameter params[], void* data)
 {
     th_any_t value;
-    th_kind_t kind = (uint64_t) munit_parameters_get(params, "kind");
-    th_t th = th_create(kind);
+    const char *method_str = munit_parameters_get(params, "method");
+    th_method_t method = str_to_method(method_str);
+    th_t th = th_create(method);
 
     value = th_get(&th, "hello", strlen("hello"));
+    munit_assert_null(value);
 
     th_free(&th);
 
@@ -44,8 +60,9 @@ MunitResult test_th_put_with_full_table(const MunitParameter params[], void* dat
 {
     int *value;
 
-    th_kind_t kind = (uint64_t) munit_parameters_get(params, "kind");
-    th_t th = th_create(kind);
+    const char *method_str = munit_parameters_get(params, "method");
+    th_method_t method = str_to_method(method_str);
+    th_t th = th_create(method);
 
     for (int i = 0; i < SET_GET_ITERATIONS; i++) {
         int *j = malloc(sizeof(i));
@@ -74,7 +91,6 @@ MunitResult test_th_put_with_full_table(const MunitParameter params[], void* dat
     th_put(&th, "hb", strlen("hb"), (th_any_t) 1);
 
     th_put(&th, "azdaz", strlen("azdaz"), (th_any_t) 10);
-
     value = th_get(&th, "azdaz", strlen("azdaz"));
 
     munit_assert_int((uint64_t) value, ==, 10);
@@ -87,8 +103,9 @@ MunitResult test_th_put_with_full_table(const MunitParameter params[], void* dat
 MunitResult test_th_put_overwrite(const MunitParameter params[], void* data)
 {
     th_any_t value;
-    th_kind_t kind = (uint64_t) munit_parameters_get(params, "kind");
-    th_t th = th_create(kind);
+    const char *method_str = munit_parameters_get(params, "method");
+    th_method_t method = str_to_method(method_str);
+    th_t th = th_create(method);
 
     th_put(&th, "a", strlen("a"), (th_any_t) 1);
     th_put(&th, "b", strlen("b"), (th_any_t) 1);
@@ -106,8 +123,9 @@ MunitResult test_th_put_overwrite(const MunitParameter params[], void* data)
 MunitResult test_th_put_collision(const MunitParameter params[], void* data)
 {
     th_any_t value;
-    th_kind_t kind = (uint64_t) munit_parameters_get(params, "kind");
-    th_t th = th_create(kind);
+    const char *method_str = munit_parameters_get(params, "method");
+    th_method_t method = str_to_method(method_str);
+    th_t th = th_create(method);
 
     th_put(&th, "b", strlen("b"), (th_any_t) 123);
     th_put(&th, "ello", strlen("ello"), (th_any_t) 456);
@@ -132,8 +150,9 @@ MunitResult test_th_put_struct_as_key(const MunitParameter params[], void* data)
 
     test_struct.b[3] = 222;
 
-    th_kind_t kind = (uint64_t) munit_parameters_get(params, "kind");
-    th_t th = th_create(kind);
+    const char *method_str = munit_parameters_get(params, "method");
+    th_method_t method = str_to_method(method_str);
+    th_t th = th_create(method);
 
     th_put(&th, &test_struct, sizeof(TestStruct), (th_any_t) 123);
     
@@ -152,8 +171,9 @@ MunitResult test_th_delete(const MunitParameter params[], void* data)
     th_any_t value;
     bool ok;
 
-    th_kind_t kind = (uint64_t) munit_parameters_get(params, "kind");
-    th_t th = th_create(kind);
+    const char *method_str = munit_parameters_get(params, "method");
+    th_method_t method = str_to_method(method_str);
+    th_t th = th_create(method);
 
     char *keys[] = {
         "a",
@@ -180,6 +200,7 @@ MunitResult test_th_delete(const MunitParameter params[], void* data)
 
     ok = th_delete(&th, "a", strlen("a"));
     munit_assert_true(ok);
+
     ok = th_delete(&th, "a", strlen("a"));
     munit_assert_false(ok);
     ok = th_delete(&th, "ello", strlen("ello"));

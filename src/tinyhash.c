@@ -1,5 +1,6 @@
 #include "tinyhash.h"
 #include "./separate_chaining/table.h"
+#include "./open_addressing/table.h"
 
 static th_funcs_t th_funcs[] = {
     [TH_SEPARATE_CHAINING] = {
@@ -11,20 +12,20 @@ static th_funcs_t th_funcs[] = {
     },
 
     [TH_OPEN_ADRESSING] = {
-        .create = NULL,
-        .get = NULL,
-        .put = NULL,
-        ._delete = NULL,
-        ._free = NULL,
+        .create = th_oa_table_create,
+        .get = th_oa_table_get,
+        .put = th_oa_table_put,
+        ._delete = th_oa_table_delete,
+        ._free = th_oa_table_free,
     },
 };
 
-th_t th_create(th_kind_t kind)
+th_t th_create(th_method_t method)
 {
-    th_funcs_t funcs = th_funcs[kind];
+    th_funcs_t funcs = th_funcs[method];
 
     return (th_t) {
-        .kind = kind,
+        .method = method,
         .funcs = funcs,
         .table = funcs.create(),
     };

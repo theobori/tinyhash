@@ -10,6 +10,7 @@ endif ()
 
 add_subdirectory(common)
 add_subdirectory(separate_chaining)
+add_subdirectory(open_addressing)
 
 set (TINYHASH_SRC
   tinyhash.c
@@ -24,7 +25,8 @@ add_library(
   ${TINYHASH_SRC}
   $<TARGET_OBJECTS:common_objects>
   $<TARGET_OBJECTS:separate_chaining_objects>
+  $<TARGET_OBJECTS:open_addressing_objects>
 )
-install (TARGETS ${TINYHASH_NAME} DESTINATION lib)
 
+install (TARGETS ${TINYHASH_NAME} DESTINATION lib)
 install (FILES ${TINYHASH_HEADERS} DESTINATION include/${TINYHASH_NAME})

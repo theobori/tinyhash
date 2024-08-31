@@ -15,7 +15,6 @@ typedef struct th_sc_entry_s {
     struct th_sc_entry_s *next;
 } th_sc_entry_t;
 
-
 bool th_sc_entry_add(th_sc_entry_t **root, th_key_t *key, th_any_t value);
 
 #endif

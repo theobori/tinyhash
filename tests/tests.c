@@ -2,14 +2,13 @@
 
 #include "test_hash.h"
 #include "test_table.h"
-#include "../src/tinyhash.h"
 
-static char *th_kinds[] = {
-  (char *) TH_SEPARATE_CHAINING, NULL
+static char *th_methods[] = {
+  (char *) "separate_chaining", (char *) "open_adressing", NULL
 };
 
 static MunitParameterEnum th_params[] = {
-  { "kind", th_kinds },
+  { "method", th_methods },
   { NULL, NULL },
 };
 
@@ -47,7 +46,7 @@ static MunitTest test_th_suite_tests[] = {
         NULL
     },
     {
-        "/th_set_and_get",
+        "/th_put_and_get",
         test_th_put_and_get,
         NULL,
         NULL,
@@ -60,10 +59,10 @@ static MunitTest test_th_suite_tests[] = {
         NULL,
         NULL,
         MUNIT_TEST_OPTION_NONE,
-        NULL
+        th_params
     },
     {
-        "/th_set_with_full_table",
+        "/th_put_with_full_table",
         test_th_put_with_full_table,
         NULL,
         NULL,
@@ -71,7 +70,7 @@ static MunitTest test_th_suite_tests[] = {
         th_params
     },
     {
-        "/th_set_overwrite",
+        "/th_put_overwrite",
         test_th_put_overwrite,
         NULL,
         NULL,
@@ -79,7 +78,7 @@ static MunitTest test_th_suite_tests[] = {
         th_params
     },
     {
-        "/th_set_collision",
+        "/th_put_collision",
         test_th_put_collision,
         NULL,
         NULL,

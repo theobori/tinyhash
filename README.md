@@ -6,6 +6,7 @@ This is a library containing multiple C implementations of hashmap. The public A
 
 Here are the different methods implemented:
 - [Separate chaining](./src/separate_chaining/)
+- [Open addressing](./src/open_addressing/)
 
 ## 📖 Build and run
 

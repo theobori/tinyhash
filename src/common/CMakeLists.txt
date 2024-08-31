@@ -7,6 +7,7 @@ set(COMMON_HEADERS
     hash.h
     key.h
     types.h
+    table.h
 )
 
 add_library(common_objects OBJECT ${COMMON_SRC})

@@ -1,5 +1,5 @@
-#ifndef __TINYHASH_KEY_H__
-#define __TINYHASH_KEY_H__
+#ifndef __TINYHASH_COMMON_KEY_H__
+#define __TINYHASH_COMMON_KEY_H__
 
 #include <stdint.h>
 #include <stdio.h>

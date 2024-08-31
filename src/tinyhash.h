@@ -9,7 +9,7 @@
 typedef enum {
     TH_SEPARATE_CHAINING,
     TH_OPEN_ADRESSING,
-} th_kind_t;
+} th_method_t;
 
 typedef th_generic_table_t (*th_create_func_t)(void);
 
@@ -30,12 +30,12 @@ typedef struct {
 } th_funcs_t;
 
 typedef struct {
-    th_kind_t kind;
+    th_method_t method;
     th_funcs_t funcs;
-    void *table;
+    th_generic_table_t table;
 } th_t;
 
-th_t th_create(th_kind_t kind);
+th_t th_create(th_method_t method);
 
 th_t th_create_default();
 
