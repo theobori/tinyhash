@@ -1,32 +1,27 @@
-project (tinyhash-lib)
+project(tinyhash-lib)
 
-set (TINYHASH_NAME "tinyhash" CACHE INTERNAL "")
+set(TINYHASH_NAME "tinyhash" CACHE INTERNAL "")
 
 if (BUILD_STATIC)
-  set (TINYHASH_LIB_TYPE STATIC)
-else ()
-  set (TINYHASH_LIB_TYPE SHARED)
-endif ()
+  set(TINYHASH_LIB_TYPE STATIC)
+else()
+  set(TINYHASH_LIB_TYPE SHARED)
+endif()
 
 add_subdirectory(common)
 add_subdirectory(separate_chaining)
 add_subdirectory(open_addressing)
 
-set (TINYHASH_SRC
-  tinyhash.c
-)
+set(TINYHASH_SRC tinyhash.c)
 
-set (TINYHASH_HEADERS
-  tinyhash.h
-)
+set(TINYHASH_HEADERS tinyhash.h)
 
-add_library(
-  ${TINYHASH_NAME} ${TINYHASH_LIB_TYPE}
+add_library(${TINYHASH_NAME} ${TINYHASH_LIB_TYPE}
   ${TINYHASH_SRC}
   $<TARGET_OBJECTS:common_objects>
   $<TARGET_OBJECTS:separate_chaining_objects>
   $<TARGET_OBJECTS:open_addressing_objects>
 )
 
-install (TARGETS ${TINYHASH_NAME} DESTINATION lib)
-install (FILES ${TINYHASH_HEADERS} DESTINATION include/${TINYHASH_NAME})
+install(TARGETS ${TINYHASH_NAME} DESTINATION lib)
+install(FILES ${TINYHASH_HEADERS} DESTINATION include/${TINYHASH_NAME})

@@ -1,10 +1,10 @@
 set(OPEN_ADDRESSING_SRC
-    table.c
+  table.c
 )
 
 set(OPEN_ADDRESSING_HEADERS
-    entry.h
-    table.h
+  entry.h
+  table.h
 )
 
 add_library(open_addressing_objects OBJECT ${OPEN_ADDRESSING_SRC})

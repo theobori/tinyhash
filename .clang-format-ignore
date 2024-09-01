@@ -1,0 +1,6 @@
+.git/*
+.github/*
+.direnv/*
+build/*
+result/*
+tests/munit/*

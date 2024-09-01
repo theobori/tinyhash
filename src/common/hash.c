@@ -4,16 +4,16 @@
 #define TH_HASH_INITIAL_VALUE 2166136261u
 #define TH_HASH_MUL_VALUE 16777619
 
-uint32_t th_hash(uint8_t *bytes, size_t size)
-{
-    if (bytes == NULL) return 0;
-    
-    uint32_t hash = TH_HASH_INITIAL_VALUE;
+uint32_t th_hash(uint8_t *bytes, size_t size) {
+  if (bytes == NULL)
+    return 0;
 
-    for (int i = 0; i < size; i++) {
-        hash ^= bytes[i];
-        hash *= TH_HASH_MUL_VALUE;
-    }
+  uint32_t hash = TH_HASH_INITIAL_VALUE;
 
-    return hash;
+  for (int i = 0; i < size; i++) {
+    hash ^= bytes[i];
+    hash *= TH_HASH_MUL_VALUE;
+  }
+
+  return hash;
 }

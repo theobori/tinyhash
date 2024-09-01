@@ -7,8 +7,8 @@
 #include "./common/types.h"
 
 typedef enum {
-    TH_SEPARATE_CHAINING,
-    TH_OPEN_ADRESSING,
+  TH_SEPARATE_CHAINING,
+  TH_OPEN_ADRESSING,
 } th_method_t;
 
 typedef th_generic_table_t (*th_create_func_t)(void);
@@ -22,17 +22,17 @@ typedef bool (*th_delete_func_t)(th_generic_table_t, th_any_t, size_t);
 typedef void (*th_free_func_t)(th_generic_table_t);
 
 typedef struct {
-    th_create_func_t create;
-    th_get_func_t get;
-    th_put_func_t put;
-    th_delete_func_t _delete;
-    th_free_func_t _free;
+  th_create_func_t create;
+  th_get_func_t get;
+  th_put_func_t put;
+  th_delete_func_t _delete;
+  th_free_func_t _free;
 } th_funcs_t;
 
 typedef struct {
-    th_method_t method;
-    th_funcs_t funcs;
-    th_generic_table_t table;
+  th_method_t method;
+  th_funcs_t funcs;
+  th_generic_table_t table;
 } th_t;
 
 th_t th_create(th_method_t method);

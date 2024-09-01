@@ -1,6 +1,6 @@
 # C hashmap implementations
 
-[![build](https://github.com/theobori/tinyhash/actions/workflows/build.yml/badge.svg)](https://github.com/theobori/tinyhash/actions/workflows/build.yml)
+[![build](https://github.com/theobori/tinyhash/actions/workflows/build.yml/badge.svg)](https://github.com/theobori/tinyhash/actions/workflows/build.yml) [![lint](https://github.com/theobori/tinyhash/actions/workflows/lint.yml/badge.svg)](https://github.com/theobori/tinyhash/actions/workflows/lint.yml)
 
 This is a library containing multiple C implementations of hashmap. The public API is deliberately simple and user-friendly.
 
@@ -54,6 +54,7 @@ Here is a basic example of how you could use the hashmap.
 
 ### With the root controller (high level)
 ```c
+#include "src/tinyhash.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -61,53 +62,52 @@ Here is a basic example of how you could use the hashmap.
 #include <tinyhash/tinyhash.h>
 
 typedef struct {
-    char name[10];
-    bool is_hydrated;
+  char name[10];
+  bool is_hydrated;
 } Person;
 
-int main(int argc, const char* argv[])
-{
-    bool success;
-    Person person = { "James", true };
+int main(int argc, const char *argv[]) {
+  bool success;
+  Person person = {"James", true};
 
-    // Create a controller with the separate chaining method 
-    th_t th = th_create(TH_SEPARATE_CHAINING);
+  // Create a controller with the separate chaining method
+  th_t th = th_create(TH_OPEN_ADRESSING);
 
-    // Insert a new key value pair
-    success = th_put(&th, "key_1", strlen("key_1"), &person);
-    if (success == false) {
-        fprintf(stderr, "Unable to insert\n");
-        return 1;
-    }
+  // Insert a new key value pair
+  success = th_put(&th, "key_1", strlen("key_1"), &person);
+  if (success == false) {
+    fprintf(stderr, "Unable to insert\n");
+    return 1;
+  }
 
-    // Get the last inserted value
-    Person *james;
-    james = th_get(&th, "key_1", strlen("key_1"));
-    if (success == false) {
-        fprintf(stderr, "It does not exist\n");
-        return 1;
-    }
+  // Get the last inserted value
+  Person *james;
+  james = th_get(&th, "key_1", strlen("key_1"));
+  if (success == false) {
+    fprintf(stderr, "It does not exist\n");
+    return 1;
+  }
 
-    printf("name -> %s, is_hydrated -> %d\n", james->name, james->is_hydrated);
+  printf("name -> %s, is_hydrated -> %d\n", james->name, james->is_hydrated);
 
-    // Delete the entry
-    success = th_delete(&th, "key_1", strlen("key_1"));
-    if (success == false) {
-        fprintf(stderr, "Unable to delete\n");
-        return 1;
-    }
+  // Delete the entry
+  success = th_delete(&th, "key_1", strlen("key_1"));
+  if (success == false) {
+    fprintf(stderr, "Unable to delete\n");
+    return 1;
+  }
 
-    // Verify that it doesnt exist anymore
-    james = th_get(&th, "key_1", strlen("key_1"));
-    if (james != NULL) {
-        fprintf(stderr, "The entry still exists\n");
-        return 1;
-    }
+  // Verify that it doesnt exist anymore
+  james = th_get(&th, "key_1", strlen("key_1"));
+  if (james != NULL) {
+    fprintf(stderr, "The entry still exists\n");
+    return 1;
+  }
 
-    // Free the allocated memory
-    th_free(&th);
+  // Free the allocated memory
+  th_free(&th);
 
-    return 0;
+  return 0;
 }
 ```
 
@@ -122,14 +122,13 @@ For example, to use the ‘separate chaining’ method, the prefix will be `th_s
 
 #include <tinyhash/separate_chaining/table.h>
 
-int main(int argc, const char* argv[])
-{
-    th_sc_table_t table;
+int main(int argc, const char *argv[]) {
+  th_sc_table_t table;
 
-    th_sc_table_init(&table);
-    th_sc_table_put(&table, "hello", strlen("hello"), (th_any_t) 0);
-    // etc..
+  th_sc_table_init(&table);
+  th_sc_table_put(&table, "hello", strlen("hello"), (th_any_t)0);
+  // etc..
 
-    return 0;
+  return 0;
 }
 ```
