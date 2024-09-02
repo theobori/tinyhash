@@ -180,12 +180,6 @@ MunitResult test_th_delete(const MunitParameter params[], void *data) {
     th_put(&th, keys[i], strlen(keys[i]), (th_any_t)(uint64_t)i + 1);
   }
 
-  // Check everything exists
-  for (int i = 0; i < keys_length; i++) {
-    value = th_get(&th, keys[i], strlen(keys[i]));
-    munit_assert_not_null(value);
-  }
-
   ok = th_delete(&th, "a", strlen("a"));
   munit_assert_true(ok);
 

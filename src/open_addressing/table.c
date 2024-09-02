@@ -17,11 +17,18 @@ void th_oa_table_init(th_oa_table_t *table) {
   table->entries = NULL;
 }
 
+/**
+ * @brief Allocate then initialize an open addressing table.
+ * It can return NULL.
+ *
+ * @return th_oa_table_t*
+ */
 static th_oa_table_t *_th_oa_table_create() {
   th_oa_table_t *table = malloc(sizeof(th_oa_table_t));
 
-  if (table == NULL)
+  if (table == NULL) {
     return NULL;
+  }
 
   th_oa_table_init(table);
 
@@ -32,24 +39,42 @@ th_generic_table_t th_oa_table_create() {
   return (th_generic_table_t)_th_oa_table_create();
 }
 
+/**
+ * @brief Copy and rehash every value from a table to another.
+ * Return true on success.
+ *
+ * @param dest
+ * @param src
+ * @return true
+ * @return false
+ */
 static bool th_oa_table_copy(th_oa_table_t *dest, th_oa_table_t *src) {
   bool success;
 
   for (int i = 0; i < src->capacity; i++) {
     th_oa_entry_t *entry = &src->entries[i];
 
-    if (entry->key == NULL)
+    if (entry->key == NULL) {
       continue;
+    }
 
     success = th_oa_table_put_with_key(dest, entry->key, entry->value);
 
-    if (success == false)
+    if (success == false) {
       return false;
+    }
   }
 
   return true;
 }
 
+/**
+ * @brief Increase the size of a table.
+ *
+ * @param table
+ * @return true
+ * @return false
+ */
 static bool th_oa_table_increase(th_oa_table_t *table) {
   th_oa_table_t new_table;
   bool success;
@@ -61,14 +86,16 @@ static bool th_oa_table_increase(th_oa_table_t *table) {
   size_t size = sizeof(th_oa_entry_t) * new_table.capacity;
 
   new_table.entries = malloc(size);
-  if (new_table.entries == NULL)
+  if (new_table.entries == NULL) {
     return false;
+  }
 
   memset(new_table.entries, 0, size);
 
   success = th_oa_table_copy(&new_table, table);
-  if (success == false)
+  if (success == false) {
     return false;
+  }
 
   th_oa_table_free(table);
 
@@ -77,6 +104,14 @@ static bool th_oa_table_increase(th_oa_table_t *table) {
   return true;
 }
 
+/**
+ * @brief Returns a bucket (entry) depending on a key.
+ * It can return a tomstone or an empty bucket.
+ *
+ * @param table
+ * @param key
+ * @return th_oa_entry_t*
+ */
 static th_oa_entry_t *th_oa_table_find(th_oa_table_t *table, th_key_t *key) {
   int index = key->hash % table->capacity;
 
@@ -88,8 +123,9 @@ static th_oa_entry_t *th_oa_table_find(th_oa_table_t *table, th_key_t *key) {
       if (entry->is_tombstone == false) {
         return tombstone != NULL ? tombstone : entry;
       } else {
-        if (tombstone == NULL)
+        if (tombstone == NULL) {
           tombstone = entry;
+        }
       }
     } else if (th_key_is_equal(key, entry->key) == true) {
       return entry;
@@ -102,29 +138,42 @@ static th_oa_entry_t *th_oa_table_find(th_oa_table_t *table, th_key_t *key) {
 th_any_t th_oa_table_get(th_generic_table_t generic_table, th_any_t data,
                          size_t data_size) {
   th_oa_table_t *table = (th_oa_table_t *)generic_table;
-  if (table->capacity == 0)
+  if (table->capacity == 0) {
     return NULL;
+  }
 
   th_key_t key = th_key_create(data, data_size);
   th_oa_entry_t *entry = th_oa_table_find(table, &key);
-  if (entry->key == NULL)
+  if (entry->key == NULL) {
     return NULL;
+  }
 
   return entry->value;
 }
 
+/**
+ * @brief Insert a value within the table with an already existing key.
+ *
+ * @param table
+ * @param key
+ * @param value
+ * @return true
+ * @return false
+ */
 static bool th_oa_table_put_with_key(th_oa_table_t *table, th_key_t *key,
                                      th_any_t value) {
-  if (table->count >= (table->capacity * TH_OA_LOAD_FACTOR)) {
-    if (th_oa_table_increase(table) == false)
+  if (table->count >= table->capacity * TH_OA_LOAD_FACTOR) {
+    if (th_oa_table_increase(table) == false) {
       return false;
+    }
   }
 
   th_oa_entry_t *entry = th_oa_table_find(table, key);
 
   if (entry->key == NULL) {
-    if (entry->is_tombstone == false)
+    if (entry->is_tombstone == false) {
       table->count++;
+    }
   } else {
     free(entry->key);
   }
@@ -148,14 +197,16 @@ bool th_oa_table_put(th_generic_table_t generic_table, th_any_t data,
 bool th_oa_table_delete(th_generic_table_t generic_table, th_any_t data,
                         size_t data_size) {
   th_oa_table_t *table = (th_oa_table_t *)generic_table;
-  if (table->capacity == 0)
+  if (table->capacity == 0) {
     return false;
+  }
 
   th_key_t key = th_key_create(data, data_size);
 
   th_oa_entry_t *entry = th_oa_table_find(table, &key);
-  if (entry->key == NULL)
+  if (entry->key == NULL) {
     return false;
+  }
 
   free(entry->key);
 
@@ -171,8 +222,9 @@ void th_oa_table_free(th_generic_table_t generic_table) {
   for (int i = 0; i < table->capacity; i++) {
     th_oa_entry_t *entry = &table->entries[i];
 
-    if (entry->key == NULL)
+    if (entry->key == NULL) {
       continue;
+    }
 
     free(entry->key);
   }
@@ -180,4 +232,6 @@ void th_oa_table_free(th_generic_table_t generic_table) {
   if (table->entries != NULL) {
     free(table->entries);
   }
+
+  th_oa_table_init(table);
 }

@@ -34,6 +34,7 @@ The following CMake build arguments are available to enable or disable options.
 | -- | -- | -- |
 | `-DBUILD_TESTS` | Compile the test files | **`ON`**
 | `-DBUILD_STATIC` | Link as a static library (instead of a shared library) | **`OFF`**
+| `-DBUILD_DOC` | Build the documentation | **`OFF`**
 
 ## 🤝 Contribute
 
@@ -47,6 +48,12 @@ The generated Makefile will contain a special `test` target, so you can run the 
 ```bash
 make test
 ```
+
+## 📝 Documentation
+
+Just make sure you run CMake with the `-DBUILD_DOC=ON` flag.
+
+The Makefile `all` target will automatically build the documentation.
 
 ## 📎 Some examples
 
@@ -70,7 +77,7 @@ int main(int argc, const char *argv[]) {
   bool success;
   Person person = {"James", true};
 
-  // Create a controller with the separate chaining method
+  // Create a controller with the open addressing method
   th_t th = th_create(TH_OPEN_ADRESSING);
 
   // Insert a new key value pair

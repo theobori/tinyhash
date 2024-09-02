@@ -8,6 +8,10 @@
 #include "../common/hash.h"
 #include "../common/key.h"
 
+/**
+ * @brief Represent an entry within a bucket.
+ *
+ */
 typedef struct th_oa_entry_s {
   th_key_t *key;
   th_any_t value;

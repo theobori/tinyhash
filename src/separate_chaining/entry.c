@@ -1,10 +1,18 @@
 #include "entry.h"
 
+/**
+ * @brief Allocate then initialize a new entry.
+ *
+ * @param key
+ * @param value
+ * @return th_sc_entry_t*
+ */
 static th_sc_entry_t *th_sc_entry_new(th_key_t *key, th_any_t value) {
   th_sc_entry_t *entry = malloc(sizeof(th_sc_entry_t));
 
-  if (entry == NULL)
+  if (entry == NULL) {
     return NULL;
+  }
 
   entry->key = *key;
   entry->value = value;
@@ -17,11 +25,13 @@ static th_sc_entry_t *th_sc_entry_new(th_key_t *key, th_any_t value) {
 bool th_sc_entry_add(th_sc_entry_t **root, th_key_t *key, th_any_t value) {
   th_sc_entry_t *entry = th_sc_entry_new(key, value);
 
-  if (entry == NULL)
+  if (entry == NULL) {
     return false;
+  }
 
-  if (*root != NULL)
+  if (*root != NULL) {
     (*root)->previous = entry;
+  }
 
   entry->next = *root;
   *root = entry;

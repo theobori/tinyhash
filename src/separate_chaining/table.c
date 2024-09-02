@@ -16,11 +16,17 @@ void th_sc_table_init(th_sc_table_t *table) {
   table->entries = NULL;
 }
 
+/**
+ * @brief Allocate then return a new table.
+ *
+ * @return th_sc_table_t*
+ */
 static th_sc_table_t *_th_sc_table_create() {
   th_sc_table_t *table = malloc(sizeof(th_sc_table_t));
 
-  if (table == NULL)
+  if (table == NULL) {
     return NULL;
+  }
 
   th_sc_table_init(table);
 
@@ -31,6 +37,15 @@ th_generic_table_t th_sc_table_create() {
   return (th_generic_table_t)_th_sc_table_create();
 }
 
+/**
+ * @brief Copy and rehash every value from a table to another.
+ * Return true on success.
+ *
+ * @param dest
+ * @param src
+ * @return true
+ * @return false
+ */
 static bool th_sc_table_copy(th_sc_table_t *dest, th_sc_table_t *src) {
   bool success;
 
@@ -40,8 +55,9 @@ static bool th_sc_table_copy(th_sc_table_t *dest, th_sc_table_t *src) {
     while (entry != NULL) {
       success = th_sc_table_put_with_key(dest, &entry->key, entry->value);
 
-      if (success == false)
+      if (success == false) {
         return false;
+      }
 
       entry = entry->next;
     }
@@ -50,6 +66,13 @@ static bool th_sc_table_copy(th_sc_table_t *dest, th_sc_table_t *src) {
   return true;
 }
 
+/**
+ * @brief Increase the size of a table.
+ *
+ * @param table
+ * @return true
+ * @return false
+ */
 static bool th_sc_table_increase(th_sc_table_t *table) {
   th_sc_table_t new_table;
   bool success;
@@ -61,14 +84,16 @@ static bool th_sc_table_increase(th_sc_table_t *table) {
   size_t size = sizeof(th_sc_entry_t *) * new_table.capacity;
   new_table.entries = malloc(size);
 
-  if (new_table.entries == NULL)
+  if (new_table.entries == NULL) {
     return false;
+  }
 
   memset(new_table.entries, 0, size);
 
   success = th_sc_table_copy(&new_table, table);
-  if (success == false)
+  if (success == false) {
     return false;
+  }
 
   th_sc_table_free((th_generic_table_t)table);
 
@@ -77,10 +102,19 @@ static bool th_sc_table_increase(th_sc_table_t *table) {
   return true;
 }
 
+/**
+ * @brief Returns a bucket (entry) depending on a key.
+ * Return NULL if the entry does not exist.
+ *
+ * @param table
+ * @param key
+ * @return th_sc_entry_t*
+ */
 static th_sc_entry_t *th_sc_table_find(th_sc_table_t *table, th_key_t *key) {
   // Avoid division by 0
-  if (table->capacity == 0)
+  if (table->capacity == 0) {
     return NULL;
+  }
 
   int index = key->hash % table->capacity;
   th_sc_entry_t *entry = table->entries[index];
@@ -102,17 +136,28 @@ th_any_t th_sc_table_get(th_generic_table_t generic_table, th_any_t data,
   th_key_t key = th_key_create(data, data_size);
 
   th_sc_entry_t *entry = th_sc_table_find(table, &key);
-  if (entry == NULL)
+  if (entry == NULL) {
     return NULL;
+  }
 
   return entry->value;
 }
 
+/**
+ * @brief Insert a value within the table with an already existing key.
+ *
+ * @param table
+ * @param key
+ * @param value
+ * @return true
+ * @return false
+ */
 static bool th_sc_table_put_with_key(th_sc_table_t *table, th_key_t *key,
                                      th_any_t value) {
   if (table->count >= table->capacity) {
-    if (th_sc_table_increase(table) == false)
+    if (th_sc_table_increase(table) == false) {
       return false;
+    }
   }
 
   th_sc_entry_t *entry = th_sc_table_find(table, key);
@@ -121,10 +166,13 @@ static bool th_sc_table_put_with_key(th_sc_table_t *table, th_key_t *key,
     int index = key->hash % table->capacity;
     th_sc_entry_t **bucket = &table->entries[index];
 
-    if (*bucket == NULL)
+    if (*bucket == NULL) {
       table->count++;
-    if (th_sc_entry_add(bucket, key, value) == false)
+    }
+
+    if (th_sc_entry_add(bucket, key, value) == false) {
       return false;
+    }
   } else {
     entry->value = value;
   }
@@ -146,8 +194,9 @@ bool th_sc_table_delete(th_generic_table_t generic_table, th_any_t data,
   th_key_t key = th_key_create(data, data_size);
 
   th_sc_entry_t *entry = th_sc_table_find(table, &key);
-  if (entry == NULL)
+  if (entry == NULL) {
     return false;
+  }
 
   int index = entry->key.hash % table->capacity;
   th_sc_entry_t **bucket = &table->entries[index];
@@ -189,4 +238,6 @@ void th_sc_table_free(th_generic_table_t generic_table) {
   if (table->entries != NULL) {
     free(table->entries);
   }
+
+  th_sc_table_init(table);
 }

@@ -3,6 +3,11 @@
 #include "./open_addressing/table.h"
 #include "./separate_chaining/table.h"
 
+/**
+ * @brief Static array containing functions that accomplish hashmap operation
+ * associated with an implementation method.
+ *
+ */
 static th_funcs_t th_funcs[] = {
     [TH_SEPARATE_CHAINING] =
         {
@@ -23,7 +28,15 @@ static th_funcs_t th_funcs[] = {
         },
 };
 
+static size_t th_funcs_length = sizeof(th_funcs) / sizeof(th_funcs[0]);
+
+th_t th_create_default() { return th_create(TH_SEPARATE_CHAINING); }
+
 th_t th_create(th_method_t method) {
+  if (method < 0 || method >= th_funcs_length) {
+    return th_create_default();
+  }
+
   th_funcs_t funcs = th_funcs[method];
 
   return (th_t){
@@ -32,8 +45,6 @@ th_t th_create(th_method_t method) {
       .table = funcs.create(),
   };
 }
-
-th_t th_create_default() { return th_create(TH_SEPARATE_CHAINING); }
 
 th_any_t th_get(th_t *th, th_any_t data, size_t data_size) {
   return th->funcs.get(th->table, data, data_size);
@@ -46,6 +57,8 @@ bool th_put(th_t *th, th_any_t data, size_t data_size, th_any_t value) {
 bool th_delete(th_t *th, th_any_t data, size_t data_size) {
   return th->funcs._delete(th->table, data, data_size);
 }
+
+void th_clear(th_t *th) { th->funcs._free(th->table); }
 
 void th_free(th_t *th) {
   th->funcs._free(th->table);

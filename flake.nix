@@ -20,7 +20,7 @@
       packages = forEachSupportedSystem (
         { pkgs }:
         {
-          default = pkgs.callPackage ./. { inherit (pkgs) cmake; };
+          default = pkgs.callPackage ./. { };
         }
       );
 
@@ -31,6 +31,8 @@
             packages = with pkgs; [
               cmake
               clang
+              doxygen
+              graphviz
             ];
           };
         }

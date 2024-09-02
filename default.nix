@@ -2,9 +2,12 @@
   stdenv,
   lib,
   cmake,
+  doxygen,
+  graphviz,
   enableStatic ? false,
   enableShared ? !enableStatic,
   enaleTests ? true,
+  enableDoc ? true,
 }:
 
 assert enableShared || enableStatic;
@@ -17,16 +20,30 @@ stdenv.mkDerivation (finalAttrs: {
 
   cmakeFlags =
     lib.optional enaleTests "-DBUILD_TESTS=ON"
-    ++ lib.optional enableStatic "-DBUILD_STATIC=ON";
+    ++ lib.optional enableStatic "-DBUILD_STATIC=ON"
+    ++ lib.optional enableDoc ''
+      -DBUILD_DOC=ON
+      -DDOT_BIN_PATH=${graphviz}/bin/dot
+    '';
 
   nativeBuildInputs = [ cmake ];
 
-  postBuild = ''
+  buildInputs = [ doxygen ];
+
+  postBuild = lib.optionals enaleTests ''
     make test
   '';
 
+  postInstall = lib.optionals enaleTests ''
+    mkdir $out/doc
+
+    for dir in "html" "latex"; do
+      mv doc/$dir $out/doc/$dir
+    done
+  '';
+
   meta = {
-    description = "Simple C hash table implementation.";
+    description = "This is a library containing multiple C implementations of hashmap.";
     homepage = "https://github.com/theobori/${finalAttrs.pname}";
     license = lib.licenses.mit;
   };
