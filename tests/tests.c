@@ -32,12 +32,12 @@ static MunitTest test_th_suite_tests[] = {
      MUNIT_TEST_OPTION_NONE, th_params},
     {"/th_delete", test_th_delete, NULL, NULL, MUNIT_TEST_OPTION_NONE,
      th_params},
+    {"/th_iterator", test_th_iterator, NULL, NULL, MUNIT_TEST_OPTION_NONE,
+     th_params},
     {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
 
 static const MunitSuite test_th_suite = {"tinyhash", test_th_suite_tests, NULL,
-                                         0,
-
-                                         MUNIT_SUITE_OPTION_NONE};
+                                         0, MUNIT_SUITE_OPTION_NONE};
 
 int main(int argc, char *argv[MUNIT_ARRAY_PARAM(argc + 1)]) {
   return munit_suite_main(&test_th_suite, (void *)"", argc, argv);

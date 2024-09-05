@@ -14,4 +14,6 @@ MunitResult test_th_put_struct_as_key(const MunitParameter params[],
                                       void *data);
 MunitResult test_th_delete(const MunitParameter params[], void *data);
 
+MunitResult test_th_iterator(const MunitParameter params[], void *data);
+
 #endif

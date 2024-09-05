@@ -241,3 +241,66 @@ void th_sc_table_free(th_generic_table_t generic_table) {
 
   th_sc_table_init(table);
 }
+
+static void th_sc_iterator_copy_entry(th_iterator_t *it, th_sc_entry_t *entry) {
+  it->current = entry;
+  it->key = &entry->key;
+  it->value = entry->value;
+}
+
+/**
+ * @brief Get the next key value pair if it exists.
+ *
+ * @param ptr
+ * @return true
+ * @return false
+ */
+static bool th_sc_iterator_next(th_iterator_t **ptr) {
+  th_iterator_t *it = *ptr;
+  th_sc_table_t *table = (th_sc_table_t *)it->generic_table;
+  th_sc_entry_t *current = (th_sc_entry_t *)it->current;
+
+  if (current != NULL && current->next != NULL) {
+    th_sc_iterator_copy_entry(it, current->next);
+    return true;
+  }
+
+  it->index++;
+
+  th_sc_entry_t *entry;
+  for (; it->index < table->capacity; it->index++) {
+    entry = table->entries[it->index];
+
+    if (entry == NULL) {
+      continue;
+    }
+
+    th_sc_iterator_copy_entry(it, entry);
+    return true;
+  }
+
+  *ptr = NULL;
+
+  return false;
+}
+
+th_iterator_t *th_sc_iterator_begin(th_generic_table_t generic_table,
+                                    bool is_begin) {
+  th_iterator_t *it = th_iterator_create(generic_table, th_sc_iterator_next);
+
+  if (it == NULL) {
+    return NULL;
+  }
+
+  it->index--;
+
+  if (is_begin == true) {
+    th_sc_iterator_next(&it);
+  }
+
+  return it;
+}
+
+int th_sc_table_len(th_generic_table_t generic_table) {
+  return (((th_sc_table_t *)generic_table)->count);
+}

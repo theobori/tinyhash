@@ -209,3 +209,43 @@ MunitResult test_th_delete(const MunitParameter params[], void *data) {
 
   return MUNIT_OK;
 }
+
+MunitResult test_th_iterator(const MunitParameter params[], void *data) {
+  th_any_t value;
+  bool ok;
+
+  const char *method_str = munit_parameters_get(params, "method");
+  th_method_t method = str_to_method(method_str);
+  th_t th = th_create(method);
+
+  char *hello = "world";
+  char *one = "one";
+  char *two = "two";
+
+  th_put(&th, "a", strlen("a"), two);
+  // Some collisions
+  th_put(&th, "b", strlen("b"), two);
+  th_put(&th, "ello", strlen("ello"), two);
+  th_put(&th, "aa", strlen("aa"), two);
+  th_put(&th, "aaa", strlen("aaa"), two);
+
+  th_put(&th, "hello", strlen("hello"), hello);
+  th_put(&th, "1", strlen("1"), one);
+
+  th_iterator_t *it;
+
+  // For loop
+  for (it = th_begin_iterator(&th); it != NULL; th_iterator_next(&it)) {
+    printf("key ->%s, value -> %s\n", (char *)it->key->data, (char *)it->value);
+  }
+
+  // While loop
+  it = th_empty_iterator(&th);
+  while (th_iterator_next(&it) == true) {
+    printf("key ->%s, value -> %s\n", (char *)it->key->data, (char *)it->value);
+  }
+
+  th_free(&th);
+
+  return MUNIT_OK;
+}

@@ -235,3 +235,57 @@ void th_oa_table_free(th_generic_table_t generic_table) {
 
   th_oa_table_init(table);
 }
+
+/**
+ * @brief Get the next key value pair if it exists.
+ *
+ * @param ptr
+ * @return true
+ * @return false
+ */
+static bool th_oa_iterator_next(th_iterator_t **ptr) {
+  th_iterator_t *it = *ptr;
+  th_oa_table_t *table = (th_oa_table_t *)it->generic_table;
+
+  it->index++;
+
+  th_oa_entry_t *entry;
+  for (; it->index < table->capacity; it->index++) {
+    entry = &table->entries[it->index];
+
+    if (entry->key == NULL) {
+      continue;
+    }
+
+    it->current = entry;
+    it->key = entry->key;
+    it->value = entry->value;
+
+    return true;
+  }
+
+  *ptr = NULL;
+
+  return false;
+}
+
+th_iterator_t *th_oa_iterator_begin(th_generic_table_t generic_table,
+                                    bool is_begin) {
+  th_iterator_t *it = th_iterator_create(generic_table, th_oa_iterator_next);
+
+  if (it == NULL) {
+    return NULL;
+  }
+
+  it->index--;
+
+  if (is_begin == true) {
+    th_oa_iterator_next(&it);
+  }
+
+  return it;
+}
+
+int th_oa_table_len(th_generic_table_t generic_table) {
+  return (((th_oa_table_t *)generic_table)->count);
+}

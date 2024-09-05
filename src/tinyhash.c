@@ -16,6 +16,8 @@ static th_funcs_t th_funcs[] = {
             .put = th_sc_table_put,
             ._delete = th_sc_table_delete,
             ._free = th_sc_table_free,
+            .begin_iterator = th_sc_iterator_begin,
+            .len = th_sc_table_len,
         },
 
     [TH_OPEN_ADRESSING] =
@@ -25,6 +27,8 @@ static th_funcs_t th_funcs[] = {
             .put = th_oa_table_put,
             ._delete = th_oa_table_delete,
             ._free = th_oa_table_free,
+            .begin_iterator = th_oa_iterator_begin,
+            .len = th_oa_table_len,
         },
 };
 
@@ -65,3 +69,13 @@ void th_free(th_t *th) {
 
   free(th->table);
 }
+
+th_iterator_t *th_begin_iterator(th_t *th) {
+  return th->funcs.begin_iterator(th->table, true);
+}
+
+th_iterator_t *th_empty_iterator(th_t *th) {
+  return th->funcs.begin_iterator(th->table, false);
+}
+
+int th_len(th_t *th) { return th->funcs.len(th->table); }

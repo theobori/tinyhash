@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "../common/iterator.h"
 #include "../common/types.h"
 #include "entry.h"
 
@@ -77,5 +78,26 @@ void th_sc_table_free(th_generic_table_t table);
  */
 bool th_sc_table_delete(th_generic_table_t table, th_any_t data,
                         size_t data_size);
+
+/**
+ * @brief Return a new iterator.
+ *
+ * If `is_begin` is true, it will initialize the iterator with the first
+ * element. Otherwise, it will be empty.
+ *
+ * @param generic_table
+ * @param is_begin
+ * @return th_iterator_t*
+ */
+th_iterator_t *th_sc_iterator_begin(th_generic_table_t generic_table,
+                                    bool is_begin);
+
+/**
+ * @brief Returns the table length.
+ *
+ * @param generic_table
+ * @return int
+ */
+int th_sc_table_len(th_generic_table_t generic_table);
 
 #endif
