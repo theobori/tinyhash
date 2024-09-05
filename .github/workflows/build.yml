@@ -3,6 +3,7 @@ name: build
 on:
   pull_request:
   push:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,3 +13,30 @@ jobs:
     - uses: cachix/install-nix-action@v27
     - run: nix build
     - run: nix flake check
+
+    - name: Setup Pages
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      id: pages
+      uses: actions/configure-pages@v5
+    
+    - name: Upload artifact
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: result/share/doc/html/
+
+  documentation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+    needs: build
+    steps:
+    - name: Publish Doxygen documentation on GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
