@@ -2,6 +2,8 @@
 
 [![build](https://github.com/theobori/tinyhash/actions/workflows/build.yml/badge.svg)](https://github.com/theobori/tinyhash/actions/workflows/build.yml) [![lint](https://github.com/theobori/tinyhash/actions/workflows/lint.yml/badge.svg)](https://github.com/theobori/tinyhash/actions/workflows/lint.yml)
 
+[![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
+
 This is a library containing multiple C implementations of hashmap. The public API is deliberately simple and user-friendly.
 
 Here are the different methods implemented:
