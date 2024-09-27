@@ -19,12 +19,14 @@ stdenv.mkDerivation (finalAttrs: {
   src = ./.;
 
   cmakeFlags =
-    lib.optional enaleTests "-DBUILD_TESTS=ON"
-    ++ lib.optional enableStatic "-DBUILD_STATIC=ON"
-    ++ lib.optional enableDoc ''
-      -DBUILD_DOC=ON
+    [
+      (lib.cmakeBool "BUILD_TESTS" enaleTests)
+      (lib.cmakeBool "BUILD_STATIC" enableStatic)
+    ]
+    ++ (lib.optional enableDoc ''
+      ${lib.cmakeBool "BUILD_DOC" true}
       -DDOT_BIN_PATH=${graphviz}/bin/dot
-    '';
+    '');
 
   nativeBuildInputs = [ cmake ];
 
